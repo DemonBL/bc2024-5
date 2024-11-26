@@ -17,6 +17,10 @@ const options = program.opts();
 
 const { host, port, cache } = options;
 
+console.log('Host:', host);
+console.log('Port:', port);
+console.log('Cache directory:', cache);
+
 // Перевірка, чи існує директорія кешу
 if (!fs.existsSync(cache)) {
   fs.mkdirSync(cache, { recursive: true });
