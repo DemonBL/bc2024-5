@@ -2,6 +2,7 @@ const { Command } = require('commander');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const multer = require('multer');
 
 const program = new Command();
 const app = express();
@@ -30,6 +31,8 @@ if (!fs.existsSync(cache)) {
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Додано для обробки JSON-запитів
+
+const upload = multer();
 
 // Маршрут для обробки запитів до кореневого URL
 app.get('/', (req, res) => {
@@ -75,18 +78,18 @@ app.get('/notes', (req, res) => {
 });
 
 // Маршрут для створення нової нотатки
-app.post('/write', (req, res) => {
+app.post('/write', upload.none(), (req, res) => {
   const { note_name, note } = req.body;
 
   if (!note_name || !note) {
     return res.status(400).send('Note name and text are required');
   }
 
-  const filePath = path.join(cache, note_name);
+  const filePath = path.join(cache, `${note_name}.txt`);
   if (fs.existsSync(filePath)) {
     return res.status(400).send('Note already exists');
   }
-
+ 
   fs.writeFileSync(filePath, note);
   res.status(201).send('Note created');
 });
